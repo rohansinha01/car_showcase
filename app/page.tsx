@@ -3,12 +3,13 @@
 import { CarCard, CustomFilter, SearchBar, ShowMore } from "@/components";
 import Hero from "@/components/Hero";
 import { fuels, yearsOfProduction } from "@/constants";
+import { CarState } from "@/types";
 import { fetchCars } from "@/utils";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 
 export default function Home() {
-  const [allCars, setAllCars] = useState([]);
+  const [allCars, setAllCars] = useState<CarState>([]);
   const [loading, setLoading] = useState(false);
 
   const [manufacturer, setManufacturer] = useState("");
@@ -32,7 +33,7 @@ export default function Home() {
 
     setAllCars(result)
   } catch(error) {
-    console.log(error)
+    console.error()
   } finally {
     setLoading(false)
   }
@@ -43,12 +44,6 @@ export default function Home() {
 
     console.log(fuel, year, limit, manufacturer, model)
   }, [fuel, year, limit, manufacturer, model])
-
-
-
-  const isDataEmpty = !Array.isArray(allCars) || allCars.length < 1 || !allCars
-
-  console.log(allCars)
 
   return (
   
@@ -74,8 +69,8 @@ export default function Home() {
           {allCars.length > 0 ? (
             <section>
               <div className="home__cars-wrapper">
-                {allCars?.map((car) => (
-                  <CarCard car={car} />
+                {allCars?.map((car, index) => (
+                  <CarCard key={`car-${index}`} car={car} />
                 ))}
               </div>
 
@@ -98,12 +93,13 @@ export default function Home() {
           />
             </section>
           ): (
-            <div className="home__error-container">
+            !loading && 
+           ( <div className="home__error-container">
               <h2 className="text-black text-xl font-bold">
                 Oops, no results
               </h2>
               <p>{allCars?.message}</p>
-            </div>
+            </div>)
           )
 
           }
